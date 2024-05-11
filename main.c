@@ -4,51 +4,48 @@
 #include <string.h>
 #include <stdbool.h>
 
-void get_file_name (char *file, char **args); 
-bool check_file_format(char *file_name);
-size_t get_file_size(FILE* file);
-void get_string(char *str_to, FILE* content_from);
+void getFileName(char *file, char **args);
+bool checkFileFormat(char *file_name);
+size_t getFileSize(FILE* file);
+void getString(char *str_to, FILE* content_from);
 
-int main (int argc, char **argv) {
+int main(int argc, char **argv) {
     if (argc < 2) {
-        printf("Please you need to pass an valid .dumb file!\n"); 
+        printf("Invalid file name. Use '.dima'.\n"); 
         return -1;
     }
 
     char *file = malloc(sizeof(argv[1]));
-    get_file_name(file, argv);
+    getFileName(file, argv);
 
-    if (!check_file_format(file)) {
-        printf("The format of the file is not '.dumb'\n");
+    if (!checkFileFormat(file)) {
+        printf("Invalid file name. Use '.dima'.\n");
     }
 
     FILE* content = fopen(file, "r");
 
     if (content == NULL) {
-        printf("Some error ocurred while reading the file!\n");
+        printf("Error ocurred while reading the file!\n");
         return -1;
     }
 
-    size_t file_size = get_file_size(content);
+    size_t fileSize = getFileSize(content);
+    char *contentString = malloc(sizeof(char) * fileSize);
 
-    char *content_string = malloc(sizeof(char) * file_size);
-
-    get_string(content_string, content);
-
-    printf("%s", content_string);
+    getString(contentString, content);
+    printf("%s", contentString);
 
     fclose(content);
-
     return 0;
 }
 
-void get_file_name (char *file, char **args) {
+void getFileName(char *file, char **args) {
     for(size_t i = 0; i < strlen(args[1]); ++i) {
         file[i] = args[1][i];
     }
 }
 
-bool check_file_format(char *file_name) {
+bool checkFileFormat(char *file_name) {
     size_t i = 0;
     for (i; file_name[i] != '.'; ++i);
 
@@ -58,13 +55,13 @@ bool check_file_format(char *file_name) {
         buff[j] = file_name[i];
     }
     
-    if (strcmp(buff, ".dumb") == 0) {
+    if (strcmp(buff, ".dima") == 0) {
         return true;
     }
     return false;
 }
 
-size_t get_file_size(FILE* file) {
+size_t getFileSize(FILE* file) {
     size_t i = 0;
 
     for (i; fgetc(file) != EOF; i++);
@@ -72,6 +69,6 @@ size_t get_file_size(FILE* file) {
     return i;
 }
 
-void get_string(char *str_to, FILE* content_from) {
+void getString(char *str_to, FILE* content_from) {
     for (size_t i = 0; !feof(content_from); str_to[i] = fgetc(content_from), ++i);
 }
