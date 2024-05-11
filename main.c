@@ -3,8 +3,9 @@
 #include <ctype.h>
 #include <string.h>
 #include <stdbool.h>
+#include "lexer.h"
 
-void getFileName(char *file, char **args);
+void getFileName(char *file, char **args); 
 bool checkFileFormat(char *file_name);
 size_t getFileSize(FILE* file);
 void getString(char *str_to, FILE* content_from);
@@ -20,22 +21,24 @@ int main(int argc, char **argv) {
 
     if (!checkFileFormat(file)) {
         printf("Invalid file name. Use '.dima'.\n");
+        return -1;
     }
 
     FILE* content = fopen(file, "r");
 
     if (content == NULL) {
-        printf("Error ocurred while reading the file!\n");
+        printf("An error occurred while reading the file.\n");
         return -1;
     }
 
     size_t fileSize = getFileSize(content);
+
     char *contentString = malloc(sizeof(char) * fileSize);
 
     getString(contentString, content);
-    printf("%s", contentString);
-
     fclose(content);
+
+    printf("%s", contentString);
     return 0;
 }
 
@@ -46,13 +49,17 @@ void getFileName(char *file, char **args) {
 }
 
 bool checkFileFormat(char *file_name) {
-    size_t i = 0;
-    for (i; file_name[i] != '.'; ++i);
+    size_t dotIndex = 0;
+    for (size_t i = 0; i < strlen(file_name); ++i) {
+        if (file_name[i] == '.') {
+            dotIndex = i;
+        }
+    }
 
-    char *buff = malloc(4);
+    char *buff = malloc(6);
     
-    for(size_t j = 0; i < strlen(file_name); ++i, ++j) {
-        buff[j] = file_name[i];
+    for(size_t j = 0; dotIndex < strlen(file_name); ++dotIndex, ++j) {
+        buff[j] = file_name[dotIndex];
     }
     
     if (strcmp(buff, ".dima") == 0) {
@@ -62,11 +69,11 @@ bool checkFileFormat(char *file_name) {
 }
 
 size_t getFileSize(FILE* file) {
-    size_t i = 0;
+    size_t size = 0;
 
-    for (i; fgetc(file) != EOF; i++);
+    for (size; fgetc(file) != EOF; size++);
     fseek(file, 0, SEEK_SET);
-    return i;
+    return size;
 }
 
 void getString(char *str_to, FILE* content_from) {
